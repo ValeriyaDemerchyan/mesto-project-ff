@@ -18,8 +18,8 @@ function closePopupByEscape (evt) {
 
 function closePopupByOverlay(popups) {
     popups.forEach((popup) => {
-      popup.addEventListener('click', (event) => {
-        if (event.target.classList.contains('popup')) {
+      popup.addEventListener('click', (evt) => {
+        if (evt.target === evt.currentTarget || evt.target.classList.contains('popup__close')) {
           closePopup(popup);
         }
       })
