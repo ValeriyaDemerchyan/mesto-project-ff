@@ -1,6 +1,11 @@
 const placesList = document.querySelector('.places__list');
 const cardTemplate = document.querySelector("#card-template").content;
 const popups = document.querySelectorAll('.popup');
+
+const avatarForm = document.querySelector('button[name="edit-avatar"]');
+const avatarButton = avatarForm.querySelector('.profile__avatar-button');
+
+
 const editPopup = document.querySelector('.popup_type_edit');
 const profileTitle = document.querySelector('.profile__title');
 const profileDescription = document.querySelector('.profile__description');

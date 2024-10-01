@@ -1,5 +1,4 @@
 import "./pages/index.css";
-import { initialCards } from "./components/cards.js";
 import { createCard, removeCard, likeCard } from "./components/card.js";
 import {
   openPopup,
@@ -106,17 +105,13 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 });
 
-initialCards.forEach(function (card) {
-  const cardElement = createCard(card, removeCard, likeCard, openCardImage);
-  placesList.append(cardElement);
-});
-
 const apiConfig = {
   baseURL: 'https://mesto.nomoreparties.co/v1/wff-cohort-23',
   headers: {
     authorization: 'd9435dee-fa54-442c-9afd-bade983a9854',
     'Content-Type': 'application/json',
   }
+}
 
 function getUserInfo () {
   return fetch(`${apiConfig.baseURL}/users/me`, {
@@ -164,8 +159,6 @@ function putLike (_id) {
   .then((res) => handleResponse(res));
 }
 
-console.log(putLike('66fc12eef7002407ee6651a7'));
-
 function deleteLike (_id) {
   return fetch(`${apiConfig.baseURL}/cards/likes/${_id}`, {
     method: 'DELETE',
@@ -180,3 +173,19 @@ function handleResponse (res) {
   }
   return Promise.reject(`Ошибка: ${res.status}`);
 };
+
+Promise.all([getInitialCards(), getUserInfo()])
+.then(([cards, userData]) => {
+  const userId = userData._id;
+  profileTitle.textContent = userData.name;
+  profileDescription.textContent = userData.about;
+  profileAvatar.style.backgroundimage = `url(${userData.avatar})`;
+
+  cards.forEach((data) => {
+    const cardElement = createCard(card, userId, removeCard, likeCard, openCardImage);
+    placesList.append(cardElement);
+  });
+})
+.catch((err) => {
+  console.log(err);
+});
