@@ -1,5 +1,5 @@
-import { putLike, deleteLike, deleteCard } from "./api";
-import { cardTemplate } from "./constants";
+import { putLike, deleteLike, deleteCard } from './api';
+import { cardTemplate } from './constants';
 
 function createCard(card, userId, removeCard, likeCard, openCardImage) {
   const cardContent = cardTemplate.querySelector('.card').cloneNode(true);
@@ -14,6 +14,7 @@ function createCard(card, userId, removeCard, likeCard, openCardImage) {
   cardImage.alt = card.name;
   cardTitle.textContent = card.name;
   likeCounter.textContent = card.likes.length.toString();
+  cardContent.id = card._id;
 
   deleteButton.addEventListener('click', () => removeCard(cardContent));
 
@@ -32,15 +33,13 @@ function createCard(card, userId, removeCard, likeCard, openCardImage) {
   }
 
   return cardContent;
-}
+};
 
 function removeCard(cardContent) {
-  const cardContentId = cardContent.id;
-  console.log(cardContentId);
-  deleteCard(cardContentId)
+  deleteCard(cardContent.id)
   .then(() => cardContent.remove())
   .catch(err => console.log(`Ошибка: ${err}`))
-}
+};
 
 function likeCard(card, userId, cardElement) {
   const buttonLike = cardElement.querySelector('.card__like-button');
@@ -59,19 +58,19 @@ function likeCard(card, userId, cardElement) {
       card.likes = res.likes;
     }).catch(handleLikeError);
   }
-}
+};
 
 function handleLikeSuccess (res, buttonLike, buttonCount) {
   buttonLike.classList.toggle('card__like-button_is-active');
   buttonCount.textContent = res.likes.length.toString();
-}
+};
 
 function handleLikeError (err) {
   console.log(`Ошибка: ${err.message}`)
-}
+};
 
 function checkLike (card, userId) {
   return card.likes.some((like) => like._id === userId);
-}
+};
 
 export { createCard, removeCard, likeCard};

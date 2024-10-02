@@ -16,14 +16,14 @@ const hideInputError = (formElement, inputElement, validationConfig) => {
 
   inputElement.classList.remove(validationConfig.inputErrorClass);
   errorElement.classList.remove(validationConfig.errorClass);
-  errorElement.textContent = "";
+  errorElement.textContent = '';
 };
 
 const isValid = (formElement, inputElement, validationConfig) => {
   if (inputElement.validity.patternMismatch) {
     inputElement.setCustomValidity(inputElement.dataset.errorMessage);
   } else {
-    inputElement.setCustomValidity("");
+    inputElement.setCustomValidity('');
   }
 
   if (!inputElement.validity.valid) {
@@ -47,7 +47,7 @@ const setEventListeners = (formElement, validationConfig) => {
   );
 
   inputList.forEach((inputElement) => {
-    inputElement.addEventListener("input", () => {
+    inputElement.addEventListener('input', () => {
       isValid(formElement, inputElement, validationConfig);
       toggleButtonState(inputList, buttonElement, validationConfig);
     });

@@ -1,18 +1,18 @@
-import "./pages/index.css";
-import { getInitialCards, getUserInfo, patchAvatar, patchProfile, postNewCard } from "./components/api.js";
-import { createCard, removeCard, likeCard } from "./components/card.js";
+import './pages/index.css';
+import { getInitialCards, getUserInfo, patchAvatar, patchProfile, postNewCard } from './components/api.js';
+import { createCard, removeCard, likeCard } from './components/card.js';
 import {
   openPopup,
   closePopup,
   closePopupByOverlay,
-} from "./components/modal.js";
+} from './components/modal.js';
 import {
   placesList,
   popups,
   avatarForm,
   profileImage,
   avatarPopup,
-  popupButton,
+  popupButtonAvatar,
   inputLinkAvatar,
   editPopup,
   profileTitle,
@@ -21,25 +21,27 @@ import {
   nameInput,
   jobInput,
   editButton,
+  popupButtonEdit,
   newCardPopup,
   cardForm,
   cardNameInput,
   cardUrlInput,
   addButton,
+  popupButtonCard,
   closeButtons,
   imageTypePopup,
   imagePopup,
   imageCaptionPopup,
-} from "./components/constants.js";
-import { enableValidation, clearValidation } from "./components/validation.js";
+} from './components/constants.js';
+import { enableValidation, clearValidation } from './components/validation.js';
 
 const validationConfig = {
-  formSelector: ".popup__form",
-  inputSelector: ".popup__input",
-  submitButtonSelector: ".popup__button",
-  inactiveButtonClass: "popup__button_disabled",
-  inputErrorClass: "popup__input_type_error",
-  errorClass: "popup__error_visible",
+  formSelector: '.popup__form',
+  inputSelector: '.popup__input',
+  submitButtonSelector: '.popup__button',
+  inactiveButtonClass: 'popup__button_disabled',
+  inputErrorClass: 'popup__input_type_error',
+  errorClass: 'popup__error_visible',
 };
 
 enableValidation(validationConfig);
@@ -48,10 +50,12 @@ profileImage.addEventListener('click', () => {
   inputLinkAvatar.value = '';
   clearValidation(avatarPopup, validationConfig);
   openPopup(avatarPopup);
-})
+});
 
 avatarForm.addEventListener('submit', (evt) => {
   evt.preventDefault();
+
+  popupButtonAvatar.textContent = 'Сохранение...'
 
   patchAvatar(inputLinkAvatar.value)
   .then((res) => {
@@ -59,10 +63,12 @@ avatarForm.addEventListener('submit', (evt) => {
   })
   .catch(err => console.log(`Ошибка: ${err}`))
   .finally(() => closePopup(avatarPopup))
-})
+});
 
-function handleFormSubmit(evt) {
+editForm.addEventListener('submit', (evt) => {
   evt.preventDefault();
+
+  popupButtonEdit.textContent = 'Сохранение...'
 
   patchProfile(nameInput.value, jobInput.value)
   .then((res) => {
@@ -71,11 +77,9 @@ function handleFormSubmit(evt) {
   })
   .catch(err => console.log(`Ошибка: ${err}`))
   .finally(() => closePopup(editPopup))
-}
+});
 
-editForm.addEventListener("submit", handleFormSubmit);
-
-editButton.addEventListener("click", () => {
+editButton.addEventListener('click', () => {
   nameInput.value = profileTitle.textContent;
   jobInput.value = profileDescription.textContent;
 
@@ -86,6 +90,8 @@ editButton.addEventListener("click", () => {
 cardForm.addEventListener('submit', (evt) => {
   evt.preventDefault();
 
+  popupButtonCard.textContent = 'Сохранение...'
+
   postNewCard(cardNameInput.value, cardUrlInput.value)
   .then((card) => {
     placesList.prepend(createCard(card, card._id, removeCard, likeCard, openCardImage));
@@ -95,14 +101,14 @@ cardForm.addEventListener('submit', (evt) => {
   .finally(() => closePopup(newCardPopup));
 });
 
-addButton.addEventListener("click", () => {
+addButton.addEventListener('click', () => {
   clearValidation(cardForm, validationConfig);
   openPopup(newCardPopup);
 });
 
 closeButtons.forEach((item) => {
-  item.addEventListener("click", (evt) => {
-    const closeButton = item.closest(".popup");
+  item.addEventListener('click', () => {
+    const closeButton = item.closest('.popup');
     closePopup(closeButton);
   });
 });
@@ -115,19 +121,18 @@ function openCardImage(cardLink, cardName) {
   imageCaptionPopup.textContent = cardName;
 
   openPopup(imageTypePopup);
-}
+};
 
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener('DOMContentLoaded', () => {
   popups.forEach((popup) => {
-    if (!popup.classList.contains("popup_is-animated")) {
-      popup.classList.add("popup_is-animated");
+    if (!popup.classList.contains('popup_is-animated')) {
+      popup.classList.add('popup_is-animated');
     }
   });
 });
 
 Promise.all([getInitialCards(), getUserInfo()])
   .then(([cards, userData]) => {
-    const userId = userData._id;
     profileTitle.textContent = userData.name;
     profileDescription.textContent = userData.about;
     profileImage.style.backgroundImage = `url(${userData.avatar})`;
