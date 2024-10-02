@@ -2,9 +2,11 @@ const placesList = document.querySelector('.places__list');
 const cardTemplate = document.querySelector("#card-template").content;
 const popups = document.querySelectorAll('.popup');
 
-const avatarForm = document.querySelector('button[name="edit-avatar"]');
-const avatarButton = avatarForm.querySelector('.profile__avatar-button');
-
+const avatarForm = document.querySelector('form[name="change-avatar"]');
+const profileImage = document.querySelector('.profile__image');
+const avatarPopup = document.querySelector('.popup__avatar');
+const popupButton = avatarPopup.querySelector('.popup__button');
+const inputLinkAvatar = avatarPopup.querySelector('.popup__input_type_url');
 
 const editPopup = document.querySelector('.popup_type_edit');
 const profileTitle = document.querySelector('.profile__title');
@@ -23,4 +25,4 @@ const imageTypePopup = document.querySelector('.popup_type_image');
 const imagePopup = imageTypePopup.querySelector('.popup__image');
 const imageCaptionPopup = imageTypePopup.querySelector('.popup__caption');
 
-export { placesList, cardTemplate, popups, editPopup, profileTitle, profileDescription, editForm, nameInput, jobInput, editButton, newCardPopup, cardForm, cardNameInput, cardUrlInput, addButton, closeButtons, imageTypePopup, imagePopup, imageCaptionPopup }
+export { placesList, cardTemplate, popups, avatarForm, profileImage, avatarPopup, popupButton,inputLinkAvatar, editPopup, profileTitle, profileDescription, editForm, nameInput, jobInput, editButton, newCardPopup, cardForm, cardNameInput, cardUrlInput, addButton, closeButtons, imageTypePopup, imagePopup, imageCaptionPopup }

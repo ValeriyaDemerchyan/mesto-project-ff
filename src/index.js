@@ -1,4 +1,5 @@
 import "./pages/index.css";
+import { getInitialCards, getUserInfo, patchAvatar, patchProfile, postNewCard } from "./components/api.js";
 import { createCard, removeCard, likeCard } from "./components/card.js";
 import {
   openPopup,
@@ -8,6 +9,11 @@ import {
 import {
   placesList,
   popups,
+  avatarForm,
+  profileImage,
+  avatarPopup,
+  popupButton,
+  inputLinkAvatar,
   editPopup,
   profileTitle,
   profileDescription,
@@ -38,13 +44,33 @@ const validationConfig = {
 
 enableValidation(validationConfig);
 
+profileImage.addEventListener('click', () => {
+  inputLinkAvatar.value = '';
+  clearValidation(avatarPopup, validationConfig);
+  openPopup(avatarPopup);
+})
+
+avatarForm.addEventListener('submit', (evt) => {
+  evt.preventDefault();
+
+  patchAvatar(inputLinkAvatar.value)
+  .then((res) => {
+    profileImage.style.backgroundImage = `url('${res.avatar}')`;
+  })
+  .catch(err => console.log(`Ошибка: ${err}`))
+  .finally(() => closePopup(avatarPopup))
+})
+
 function handleFormSubmit(evt) {
   evt.preventDefault();
 
-  profileTitle.textContent = nameInput.value;
-  profileDescription.textContent = jobInput.value;
-
-  closePopup(editPopup);
+  patchProfile(nameInput.value, jobInput.value)
+  .then((res) => {
+  profileTitle.textContent = res.name;
+  profileDescription.textContent = res.about;
+  })
+  .catch(err => console.log(`Ошибка: ${err}`))
+  .finally(() => closePopup(editPopup))
 }
 
 editForm.addEventListener("submit", handleFormSubmit);
@@ -57,27 +83,21 @@ editButton.addEventListener("click", () => {
   clearValidation(editForm, validationConfig);
 });
 
-function handleFormCard(evt) {
+cardForm.addEventListener('submit', (evt) => {
   evt.preventDefault();
 
-  const cardFormData = {
-    name: cardNameInput.value,
-    link: new URL(cardUrlInput.value, import.meta.url),
-  };
-  const card = createCard(cardFormData, removeCard, likeCard, openCardImage);
-  placesList.prepend(card);
-
-  cardForm.reset();
-
-  closePopup(newCardPopup);
-}
-
-cardForm.addEventListener("submit", handleFormCard);
+  postNewCard(cardNameInput.value, cardUrlInput.value)
+  .then((card) => {
+    placesList.prepend(createCard(card, card._id, removeCard, likeCard, openCardImage));
+    cardForm.reset();
+  })
+  .catch((err) => console.log(`Ошибка: ${err}`))
+  .finally(() => closePopup(newCardPopup));
+});
 
 addButton.addEventListener("click", () => {
   clearValidation(cardForm, validationConfig);
   openPopup(newCardPopup);
-  cardForm.reset();
 });
 
 closeButtons.forEach((item) => {
@@ -105,87 +125,16 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 });
 
-const apiConfig = {
-  baseURL: 'https://mesto.nomoreparties.co/v1/wff-cohort-23',
-  headers: {
-    authorization: 'd9435dee-fa54-442c-9afd-bade983a9854',
-    'Content-Type': 'application/json',
-  }
-}
-
-function getUserInfo () {
-  return fetch(`${apiConfig.baseURL}/users/me`, {
-    headers: apiConfig.headers,
-  })
-  .then((res) => handleResponse(res))
-};
-
-function getInitialCards () {
-  return fetch(`${apiConfig.baseURL}/cards`, {
-    headers: apiConfig.headers,
-  })
-  .then((res) => handleResponse(res))
-};
-
-function patchProfile(name, description) {
-  return fetch(`${apiConfig.baseURL}/users/me`, {
-    method: 'PATCH',
-    headers: apiConfig.headers,
-    body: JSON.stringify({
-      name: name,
-      about: description,
-    }),
-  })
-  .then((res) => handleResponse(res))
-}
-
-function postNewCard (name, link) {
-  return fetch(`${apiConfig.baseURL}/cards`, {
-    method: 'POST',
-    headers: apiConfig.headers,
-    body: JSON.stringify({
-      name: name,
-      link: link,
-    }),
-  })
-  .then((res) => handleResponse(res));
-}
-
-function putLike (_id) {
-  return fetch(`${apiConfig.baseURL}/cards/likes/${_id}`, {
-    method: 'PUT',
-    headers: apiConfig.headers,
-  })
-  .then((res) => handleResponse(res));
-}
-
-function deleteLike (_id) {
-  return fetch(`${apiConfig.baseURL}/cards/likes/${_id}`, {
-    method: 'DELETE',
-    headers: apiConfig.headers,
-  })
-  .then((res) => handleResponse(res));
-}
-
-function handleResponse (res) {
-  if(res.ok) {
-    return res.json();
-  }
-  return Promise.reject(`Ошибка: ${res.status}`);
-};
-
 Promise.all([getInitialCards(), getUserInfo()])
-.then(([cards, userData]) => {
-  const userId = userData._id;
-  profileTitle.textContent = userData.name;
-  profileDescription.textContent = userData.about;
-  profileAvatar.style.backgroundimage = `url(${userData.avatar})`;
-
-  cards.forEach((data) => {
-    const cardElement = createCard(card, userId, removeCard, likeCard, openCardImage);
-    placesList.append(cardElement);
-  });
-})
-.catch((err) => {
-  console.log(err);
-});
+  .then(([cards, userData]) => {
+    const userId = userData._id;
+    profileTitle.textContent = userData.name;
+    profileDescription.textContent = userData.about;
+    profileImage.style.backgroundImage = `url(${userData.avatar})`;
+    
+  
+    cards.forEach((card) => 
+      placesList.append(createCard(card, userData._id, removeCard, likeCard, openCardImage)));
+    })
+  .catch((err) => console.log(`Ошибка: ${err.message}`));
+  
