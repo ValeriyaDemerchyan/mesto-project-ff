@@ -31,8 +31,9 @@ import {
   closeButtons,
   imageTypePopup,
   imagePopup,
-  imageCaptionPopup,
+  imageCaptionPopup
 } from './components/constants.js';
+
 import { enableValidation, clearValidation } from './components/validation.js';
 
 const validationConfig = {
@@ -60,9 +61,10 @@ avatarForm.addEventListener('submit', (evt) => {
   patchAvatar(inputLinkAvatar.value)
   .then((res) => {
     profileImage.style.backgroundImage = `url('${res.avatar}')`;
+    closePopup(avatarPopup);
   })
   .catch(err => console.log(`Ошибка: ${err}`))
-  .finally(() => closePopup(avatarPopup))
+  .finally(() => popupButtonAvatar.textContent = 'Сохранить');
 });
 
 editForm.addEventListener('submit', (evt) => {
@@ -74,9 +76,10 @@ editForm.addEventListener('submit', (evt) => {
   .then((res) => {
   profileTitle.textContent = res.name;
   profileDescription.textContent = res.about;
+  closePopup(editPopup);
   })
   .catch(err => console.log(`Ошибка: ${err}`))
-  .finally(() => closePopup(editPopup))
+  .finally(() => popupButtonEdit.textContent = 'Сохранить');
 });
 
 editButton.addEventListener('click', () => {
@@ -94,15 +97,18 @@ cardForm.addEventListener('submit', (evt) => {
 
   postNewCard(cardNameInput.value, cardUrlInput.value)
   .then((card) => {
-    placesList.prepend(createCard(card, card._id, removeCard, likeCard, openCardImage));
+    placesList.prepend(createCard(card, card.owner._id, removeCard, likeCard, openCardImage));
     cardForm.reset();
+    closePopup(newCardPopup);
   })
   .catch((err) => console.log(`Ошибка: ${err}`))
-  .finally(() => closePopup(newCardPopup));
+  .finally(() => popupButtonCard.textContent = 'Сохранить');
 });
 
 addButton.addEventListener('click', () => {
   clearValidation(cardForm, validationConfig);
+  cardNameInput.value = '';
+  cardUrlInput.value = '';
   openPopup(newCardPopup);
 });
 

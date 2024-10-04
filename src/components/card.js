@@ -18,7 +18,7 @@ function createCard(card, userId, removeCard, likeCard, openCardImage) {
 
   deleteButton.addEventListener('click', () => removeCard(cardContent));
 
-  likeButton.addEventListener('click', () => likeCard(card, userId, cardContent));
+  likeButton.addEventListener('click', () => likeCard(card, userId, likeButton, likeCounter));
 
   cardImage.addEventListener('click', () => openCardImage(card.link, card.name));
 
@@ -41,9 +41,7 @@ function removeCard(cardContent) {
   .catch(err => console.log(`Ошибка: ${err}`))
 };
 
-function likeCard(card, userId, cardElement) {
-  const buttonLike = cardElement.querySelector('.card__like-button');
-  const buttonCount = cardElement.querySelector('.card__like-counter');
+function likeCard(card, userId, buttonLike, buttonCount) {
 
   if(checkLike(card, userId)) {
     deleteLike(card)
@@ -62,7 +60,7 @@ function likeCard(card, userId, cardElement) {
 
 function handleLikeSuccess (res, buttonLike, buttonCount) {
   buttonLike.classList.toggle('card__like-button_is-active');
-  buttonCount.textContent = res.likes.length.toString();
+  buttonCount.textContent = res.likes.length;
 };
 
 function handleLikeError (err) {
